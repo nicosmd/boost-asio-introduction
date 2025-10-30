@@ -2,30 +2,30 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
 
     <title>reveal.js</title>
 
-    <link rel="stylesheet" href="dist/reset.css">
-    <link rel="stylesheet" href="dist/reveal.css">
-    <link rel="stylesheet" href="dist/theme/black.css">
+    <link href="dist/reset.css" rel="stylesheet">
+    <link href="dist/reveal.css" rel="stylesheet">
+    <link href="dist/theme/black.css" rel="stylesheet">
 
     <!-- Theme used for syntax highlighted code -->
-    <link rel="stylesheet" href="plugin/highlight/monokai.css">
+    <link href="plugin/highlight/monokai.css" rel="stylesheet">
 </head>
 <body>
-<div class="reveal slide center focused has-horizontal-slides ready" role="application" data-transition-speed="default"
-     data-background-transition="fade" style="">
+<div class="reveal slide center focused has-horizontal-slides ready" data-background-transition="fade"
+     data-transition-speed="default" role="application" style="">
     <div class="slides"
          style="width: 960px; height: 700px; inset: 50% auto auto 50%; transform: translate(-50%, -50%) scale(1.33166);">
 
-        <section style="top: 38.5px; display: block;" class="past" hidden="" aria-hidden="true">
+        <section aria-hidden="true" class="past" hidden="" style="top: 38.5px; display: block;">
             <h1>Boost.Asio</h1>
             <h3>Asynchronous programming in Modern C++</h3>
             <p>High Performance • Scalable • Cross‑Platform</p>
         </section>
 
-        <section style="top: 159px; display: block;" class="present">
+        <section class="present" style="top: 159px; display: block;">
             <h2>What is Boost.Asio?</h2>
             <ul>
                 <li>Library for network &amp; low‑level I/O</li>
@@ -35,29 +35,30 @@
             </ul>
         </section>
 
-        <section style="top: 185px; display: block;" class="future" hidden="" aria-hidden="true">
+        <section aria-hidden="true" class="future" hidden="" style="top: 185px; display: block;">
             <h2>Key Features</h2>
             <ul>
                 <li>TCP / UDP Networking</li>
                 <li>Timers &amp; Serial Ports</li>
                 <li>Strand-based concurrency control</li>
                 <li>Supports callbacks, coroutines, futures</li>
+                <li>Channels</li>
             </ul>
         </section>
 
-        <section style="top: 114px; display: block;" class="future" hidden="" aria-hidden="true">
+        <section aria-hidden="true" class="future" hidden="" style="top: 114px; display: block;">
             <h2>Core Concept: io_context</h2>
             <p>Event processing core of Asio applications</p>
-            <pre><code data-trim="" data-noescape="">
-boost::asio::io_context io;
+            <pre><code data-noescape="" data-trim="">
+            boost::asio::io_context io;
 
-io.run();  // processes all async operations
-</code></pre>
+            io.run();  // processes all async operations
+            </code></pre>
         </section>
 
-        <section style="top: 120px; display: none;" class="future" hidden="" aria-hidden="true">
+        <section aria-hidden="true" class="future" hidden="" style="top: 120px; display: none;">
             <h2>Simple Example: Hello World</h2>
-            <pre><code data-trim="" data-noescape="" class="language-cpp">
+            <pre><code class="language-cpp" data-noescape="" data-trim="" data-line-numbers="">
 #include &lt;iostream&gt;
 #include &lt;boost/asio.hpp&gt;
 
@@ -73,15 +74,18 @@ int main() {
     io.run();
 }
 </code></pre>
-            <p style="text-align: left; margin-top: 20px;">Output:</p>
-            <pre style="background-color: #1e1e1e; border-left: 4px solid #4CAF50; padding: 15px; margin-top: 10px;"><code
-                    style="color: #4CAF50; font-family: 'Courier New', monospace;">$ ./main
+            <div class="fragment">
+                <p style="text-align: left; margin-top: 20px;">Output:</p>
+                <pre style="background-color: #1e1e1e; border-left: 4px solid #4CAF50; padding: 15px; margin-top: 10px;"><code
+                        style="color: #4CAF50; font-family: 'Courier New', monospace;">$ ./main
 Hello World</code></pre>
+            </div>
         </section>
 
-        <section style="top: 120px; display: none;" class="future" hidden="" aria-hidden="true">
-            <h2 style="font-size: 1.6em; margin: 0 0 8px 0;">Recursive Async</h2>
-            <pre style="font-size: 0.4em; margin: 0;"><code data-trim="" data-noescape="" class="language-cpp">
+        <section aria-hidden="true" class="future" hidden="" style="top: 120px; display: none;">
+            <h2 style="font-size: 1.6em; margin: 0 0 8px 0;">Recursive Loop</h2>
+            <pre style="font-size: 0.45em; margin: 0;"><code class="language-cpp" data-line-numbers="|1-8|6|12|"
+                                                            data-noescape="" data-trim="">
 void async_function(async::io_context&amp; io) {
     static auto counter = 0;
     async::post(io, [&amp;io]() {
@@ -97,18 +101,52 @@ int main() {
     io.run();
 }
 </code></pre>
-            <p style="text-align: left; margin: 5px 0 3px 0; font-size: 0.65em;">Output:</p>
-            <pre style="background-color: #1e1e1e; border-left: 3px solid #4CAF50; padding: 8px; margin: 0; font-size: 0.45em;"><code style="color: #4CAF50; font-family: 'Courier New', monospace;">$ ./loop_example
+            <div class="fragment">
+                <p style="text-align: left; margin: 5px 0 3px 0; font-size: 0.65em;">Output:</p>
+                <pre style="background-color: #1e1e1e; border-left: 3px solid #4CAF50; padding: 8px; margin: 0; font-size: 0.45em;"><code
+                        style="color: #4CAF50; font-family: 'Courier New', monospace;">$ ./loop_example
 Hello World: 0
 Hello World: 1
 Hello World: 2
 Hello World: 3
 ...</code></pre>
+            </div>
         </section>
 
-        <section style="top: 120px; display: none;" class="future" hidden="" aria-hidden="true">
+        <section aria-hidden="true" class="future" hidden="" style="top: 120px; display: none;">
+            <h2 style="font-size: 1.6em; margin: 0 0 8px 0;">Timer Loop Example</h2>
+            <pre style="font-size: 0.4em; margin: 0;"><code class="language-cpp" data-line-numbers="|1-8|3|4|7|12,14|" data-noescape="" data-trim="">
+void async_function(async::steady_timer* timer) {
+    static auto counter = 0;
+    timer-&gt;expires_after(std::chrono::seconds(1));
+    timer-&gt;async_wait([timer](const boost::system::error_code&amp;) {
+        std::cout &lt;&lt; "Hello World: " &lt;&lt; counter &lt;&lt; std::endl;
+        ++counter;
+        async_function(timer);
+    });
+}
+
+int main() {
+    async::io_context io;
+    async::steady_timer t(io);
+    async_function(&amp;t);
+    io.run();
+}
+</code></pre>
+            <div class="fragment">
+                <p style="text-align: left; margin: 5px 0 3px 0; font-size: 0.65em;">Output (1 second intervals):</p>
+                <pre style="background-color: #1e1e1e; border-left: 3px solid #4CAF50; padding: 8px; margin: 0; font-size: 0.45em;"><code style="color: #4CAF50; font-family: 'Courier New', monospace;">$ ./timer_loop_example
+Hello World: 0
+Hello World: 1
+Hello World: 2
+Hello World: 3
+...</code></pre>
+            </div>
+        </section>
+
+        <section aria-hidden="true" class="future" hidden="" style="top: 120px; display: none;">
             <h2>Example: TCP Client</h2>
-            <pre><code data-trim="" data-noescape="">
+            <pre><code data-noescape="" data-trim="">
 boost::asio::io_context io;
 boost::asio::ip::tcp::socket socket(io);
 
@@ -118,9 +156,9 @@ socket.write_some(boost::asio::buffer("Hello!"));
             <p>🚀 Blocking example — simple starting point</p>
         </section>
 
-        <section style="top: 32.5px; display: none;" class="future" hidden="" aria-hidden="true">
+        <section aria-hidden="true" class="future" hidden="" style="top: 32.5px; display: none;">
             <h2>Non‑Blocking with async_read</h2>
-            <pre><code data-trim="" data-noescape="">
+            <pre><code data-noescape="" data-trim="">
 socket.async_read_some(
     boost::asio::buffer(data),
     [](auto ec, std::size_t bytes) {
@@ -132,10 +170,10 @@ socket.async_read_some(
             <p>👉 Handler runs when operation completes</p>
         </section>
 
-        <section style="top: 127.5px; display: none;" class="future" hidden="" aria-hidden="true">
+        <section aria-hidden="true" class="future" hidden="" style="top: 127.5px; display: none;">
             <h2>Strands: Thread Safety</h2>
             <p>Guarantees handler execution order</p>
-            <pre><code data-trim="" data-noescape="">
+            <pre><code data-noescape="" data-trim="">
 boost::asio::strand strand(io);
 
 boost::asio::post(strand, [] {
@@ -144,7 +182,7 @@ boost::asio::post(strand, [] {
 </code></pre>
         </section>
 
-        <section style="top: 126.5px; display: none;" class="future" hidden="" aria-hidden="true">
+        <section aria-hidden="true" class="future" hidden="" style="top: 126.5px; display: none;">
             <h2>Boost.Asio Execution Flow</h2>
             <ul>
                 <li>1️⃣ Setup async operation</li>
@@ -154,7 +192,7 @@ boost::asio::post(strand, [] {
             </ul>
         </section>
 
-        <section style="top: 87px; display: none;" class="future" hidden="" aria-hidden="true">
+        <section aria-hidden="true" class="future" hidden="" style="top: 87px; display: none;">
             <h1>🎉 Thank You!</h1>
             <p>Questions?</p>
             <p><small>Boost.Asio — Powering High Performance C++ Networking</small></p>
@@ -171,22 +209,22 @@ boost::asio::post(strand, [] {
         <div class="slide-background future" data-loaded="true" style="display: block;">
             <div class="slide-background-content"></div>
         </div>
-        <div class="slide-background future" style="display: block;" data-loaded="true">
+        <div class="slide-background future" data-loaded="true" style="display: block;">
             <div class="slide-background-content"></div>
         </div>
-        <div class="slide-background future" style="display: none;" data-loaded="true">
+        <div class="slide-background future" data-loaded="true" style="display: none;">
             <div class="slide-background-content"></div>
         </div>
-        <div class="slide-background future" style="display: none;" data-loaded="true">
+        <div class="slide-background future" data-loaded="true" style="display: none;">
             <div class="slide-background-content"></div>
         </div>
-        <div class="slide-background future" style="display: none;" data-loaded="true">
+        <div class="slide-background future" data-loaded="true" style="display: none;">
             <div class="slide-background-content"></div>
         </div>
-        <div class="slide-background future" style="display: none;" data-loaded="true">
+        <div class="slide-background future" data-loaded="true" style="display: none;">
             <div class="slide-background-content"></div>
         </div>
-        <div class="slide-background future" style="display: none;" data-loaded="true">
+        <div class="slide-background future" data-loaded="true" style="display: none;">
             <div class="slide-background-content"></div>
         </div>
     </div>
@@ -194,18 +232,18 @@ boost::asio::post(strand, [] {
             href="file:///Users/nico.schmidt/Downloads/boost_asio_presentation.html#/1">
         <span class="slide-number-a">2</span>
     </a></div>
-    <aside class="controls" data-controls-layout="bottom-right" data-controls-back-arrows="faded"
+    <aside class="controls" data-controls-back-arrows="faded" data-controls-layout="bottom-right"
            style="display: block;">
-        <button class="navigate-left enabled" aria-label="previous slide">
+        <button aria-label="previous slide" class="navigate-left enabled">
             <div class="controls-arrow"></div>
         </button>
-        <button class="navigate-right enabled" aria-label="next slide">
+        <button aria-label="next slide" class="navigate-right enabled">
             <div class="controls-arrow"></div>
         </button>
-        <button class="navigate-up" aria-label="above slide" disabled="disabled">
+        <button aria-label="above slide" class="navigate-up" disabled="disabled">
             <div class="controls-arrow"></div>
         </button>
-        <button class="navigate-down" aria-label="below slide" disabled="disabled">
+        <button aria-label="below slide" class="navigate-down" disabled="disabled">
             <div class="controls-arrow"></div>
         </button>
     </aside>
@@ -214,10 +252,29 @@ boost::asio::post(strand, [] {
     <div class="pause-overlay">
         <button class="resume-button">Resume presentation</button>
     </div>
-    <div class="aria-status" aria-live="polite" aria-atomic="true"
+    <div aria-atomic="true" aria-live="polite" class="aria-status"
          style="position: absolute; height: 1px; width: 1px; overflow: hidden; clip: rect(1px, 1px, 1px, 1px);">What is
-        Boost.Asio? 📡 Library for network &amp; low‑level I/O 🔥 Asynchronous event-driven programming ✅ Part of the
-        Boost C++ Libraries 🧱 Forms the base for std::asio in Networking TS
+        Boost.Asio?
+        📡
+        Library
+        for
+        network &amp; low‑level
+        I/O 🔥
+        Asynchronous
+        event-driven
+        programming
+        ✅ Part
+        of the
+        Boost
+        C++
+        Libraries
+        🧱 Forms
+        the base
+        for
+        std::asio
+        in
+        Networking
+        TS
     </div>
 </div>
 
