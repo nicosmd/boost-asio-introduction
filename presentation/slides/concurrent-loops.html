@@ -1,0 +1,40 @@
+<section aria-hidden="true" class="future" hidden="" style="top: 120px; display: none;">
+    <h2 style="font-size: 1.6em; margin: 0 0 8px 0;">Concurrent Loops</h2>
+    <pre style="font-size: 0.38em; margin: 0;"><code class="language-cpp" data-line-numbers="|7-16|18-27|33-34|" data-noescape="" data-trim="">
+void async_function(async::io_context&amp; io) {
+    static auto counter = 0;
+    async::post(io, [&amp;io]() {
+        std::cout &lt;&lt; "Hello Async Func: " &lt;&lt; counter &lt;&lt; std::endl;
+        ++counter;
+        async_function(io);
+    });
+}
+
+void other_async_function(async::io_context&amp; io) {
+    static auto counter = 0;
+    async::post(io, [&amp;io]() {
+        std::cout &lt;&lt; "Hello Other Async Func: " &lt;&lt; counter &lt;&lt; std::endl;
+        ++counter;
+        other_async_function(io);
+    });
+}
+
+int main() {
+    async::io_context io;
+    async_function(io);
+    other_async_function(io);
+    io.run();
+}
+</code></pre>
+    <div class="fragment">
+        <p style="text-align: left; margin: 5px 0 3px 0; font-size: 0.65em;">Output (interleaved execution):</p>
+        <pre style="background-color: #1e1e1e; border-left: 3px solid #4CAF50; padding: 8px; margin: 0; font-size: 0.45em;"><code style="color: #4CAF50; font-family: 'Courier New', monospace;">$ ./concurrent_loops
+Hello Async Func: 0
+Hello Other Async Func: 0
+Hello Async Func: 1
+Hello Other Async Func: 1
+Hello Async Func: 2
+Hello Other Async Func: 2
+...</code></pre>
+    </div>
+</section>

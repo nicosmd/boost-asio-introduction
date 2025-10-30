@@ -31,7 +31,8 @@
                 <li>Library for network &amp; low‑level I/O</li>
                 <li>Asynchronous event-driven programming</li>
                 <li>Part of the Boost C++ Libraries</li>
-                <li>Forms the base for <strong>std::asio</strong> in Networking TS</li>
+                <li>Non-Boost version available</li>
+                <li>Forms the base for <strong>std::executors</strong> in Networking TS</li>
             </ul>
         </section>
 
@@ -41,7 +42,8 @@
                 <li>TCP / UDP Networking</li>
                 <li>Timers &amp; Serial Ports</li>
                 <li>Strand-based concurrency control</li>
-                <li>Supports callbacks, coroutines, futures</li>
+                <li>Supports callbacks, futures, coroutines </li>
+                <li>Built-in TLS support</li>
                 <li>Channels</li>
             </ul>
         </section>
@@ -56,6 +58,7 @@
             </code></pre>
         </section>
 
+        <!-- Hello World Example - slides/hello-world.html -->
         <section aria-hidden="true" class="future" hidden="" style="top: 120px; display: none;">
             <h2>Simple Example: Hello World</h2>
             <pre><code class="language-cpp" data-noescape="" data-trim="" data-line-numbers="">
@@ -82,6 +85,7 @@ Hello World</code></pre>
             </div>
         </section>
 
+        <!-- Recursive Loop Example - slides/recursive-loop.html -->
         <section aria-hidden="true" class="future" hidden="" style="top: 120px; display: none;">
             <h2 style="font-size: 1.6em; margin: 0 0 8px 0;">Recursive Loop</h2>
             <pre style="font-size: 0.45em; margin: 0;"><code class="language-cpp" data-line-numbers="|1-8|6|12|"
@@ -113,6 +117,7 @@ Hello World: 3
             </div>
         </section>
 
+        <!-- Timer Loop Example - slides/timer-loop.html -->
         <section aria-hidden="true" class="future" hidden="" style="top: 120px; display: none;">
             <h2 style="font-size: 1.6em; margin: 0 0 8px 0;">Timer Loop Example</h2>
             <pre style="font-size: 0.4em; margin: 0;"><code class="language-cpp" data-line-numbers="|1-8|3|4|7|12,14|" data-noescape="" data-trim="">
@@ -144,58 +149,234 @@ Hello World: 3
             </div>
         </section>
 
+        <!-- Concurrent Loops Example - slides/concurrent-loops.html -->
         <section aria-hidden="true" class="future" hidden="" style="top: 120px; display: none;">
-            <h2>Example: TCP Client</h2>
-            <pre><code data-noescape="" data-trim="">
-boost::asio::io_context io;
-boost::asio::ip::tcp::socket socket(io);
-
-socket.connect({boost::asio::ip::make_address("127.0.0.1"), 8080});
-socket.write_some(boost::asio::buffer("Hello!"));
-</code></pre>
-            <p>🚀 Blocking example — simple starting point</p>
-        </section>
-
-        <section aria-hidden="true" class="future" hidden="" style="top: 32.5px; display: none;">
-            <h2>Non‑Blocking with async_read</h2>
-            <pre><code data-noescape="" data-trim="">
-socket.async_read_some(
-    boost::asio::buffer(data),
-    [](auto ec, std::size_t bytes) {
-        if (!ec)
-            std::cout &lt;&lt; "Received: " &lt;&lt; bytes &lt;&lt; " bytes
-";
+            <h2 style="font-size: 1.6em; margin: 0 0 8px 0;">Concurrent Loops</h2>
+            <pre style="font-size: 0.38em; margin: 0;"><code class="language-cpp" data-line-numbers="|1-8|10-17|20-22|" data-noescape="" data-trim="">
+void async_function(async::io_context&amp; io) {
+    static auto counter = 0;
+    async::post(io, [&amp;io]() {
+        std::cout &lt;&lt; "Hello Async Func: " &lt;&lt; counter &lt;&lt; std::endl;
+        ++counter;
+        async_function(io);
     });
+}
+
+void other_async_function(async::io_context&amp; io) {
+    static auto counter = 0;
+    async::post(io, [&amp;io]() {
+        std::cout &lt;&lt; "Hello Other Async Func: " &lt;&lt; counter &lt;&lt; std::endl;
+        ++counter;
+        other_async_function(io);
+    });
+}
+
+int main() {
+    async::io_context io;
+    async_function(io);
+    other_async_function(io);
+    io.run();
+}
 </code></pre>
-            <p>👉 Handler runs when operation completes</p>
+            <div class="fragment">
+                <p style="text-align: left; margin: 5px 0 3px 0; font-size: 0.45em;">Output (interleaved execution):</p>
+                <pre style="background-color: #1e1e1e; border-left: 3px solid #4CAF50; padding: 8px; margin: 0; font-size: 0.35em;"><code style="color: #4CAF50; font-family: 'Courier New', monospace;">$ ./concurrent_loops
+Hello Async Func: 0
+Hello Other Async Func: 0
+Hello Async Func: 1
+Hello Other Async Func: 1
+Hello Async Func: 2
+Hello Other Async Func: 2
+...</code></pre>
+            </div>
         </section>
 
-        <section aria-hidden="true" class="future" hidden="" style="top: 127.5px; display: none;">
-            <h2>Strands: Thread Safety</h2>
-            <p>Guarantees handler execution order</p>
-            <pre><code data-noescape="" data-trim="">
-boost::asio::strand strand(io);
+        <!-- Multithreading Example - slides/multithreading.html -->
+        <section aria-hidden="true" class="future" hidden="" style="top: 120px; display: none;">
+            <h2 style="font-size: 1.6em; margin: 0 0 8px 0;">Multithreading</h2>
+            <pre style="font-size: 0.38em; margin: 0;"><code class="language-cpp" data-line-numbers="|1-8|10-17|20-23|23|24|" data-noescape="" data-trim="">
+void async_function(async::io_context&amp; io) {
+    static auto counter = 0;
+    async::post(io, [&amp;io]() {
+        std::cout &lt;&lt; "Hello Async Func: " &lt;&lt; counter &lt;&lt; std::endl;
+        ++counter;
+        async_function(io);
+    });
+}
 
-boost::asio::post(strand, [] {
-    std::cout &lt;&lt; "Executed without race conditions!";
-});
+void other_async_function(async::io_context&amp; io) {
+    static auto counter = 0;
+    async::post(io, [&amp;io]() {
+        std::cout &lt;&lt; "Hello Other Async Func: " &lt;&lt; counter &lt;&lt; std::endl;
+        ++counter;
+        other_async_function(io);
+    });
+}
+
+int main() {
+    async::io_context io;
+    async_function(io);
+    other_async_function(io);
+    std::thread t{[&amp;io] { io.run(); }};
+    io.run();
+}
 </code></pre>
+            <div class="fragment">
+                <p style="text-align: left; margin: 5px 0 3px 0; font-size: 0.45em;">Output (parallel execution on 2 threads):</p>
+                <pre style="background-color: #1e1e1e; border-left: 3px solid #4CAF50; padding: 8px; margin: 0; font-size: 0.35em;"><code style="color: #4CAF50; font-family: 'Courier New', monospace;">$ ./multithreading
+Hello Async Func: 0
+Hello Async Func: 1
+Hello Other Async Func: 0
+Hello Other Async Func: 1Hello Async Func: 2
+Hello Other Async Func: 2
+...</code></pre>
+            </div>
+        </section>
+
+        <!-- Multithreading with strands Example - slides/multithreading.html -->
+        <section aria-hidden="true" class="future" hidden="" style="top: 120px; display: none;">
+            <h2 style="font-size: 1.6em; margin: 0 0 8px 0;">Strands</h2>
+            <pre style="font-size: 0.38em; margin: 0;"><code class="language-cpp" data-line-numbers="|1|10|21-23|" data-noescape="" data-trim="">
+void async_function(async::io_context::strand&amp; io) {
+    static auto counter = 0;
+    async::post(io, [&amp;io]() {
+        std::cout &lt;&lt; "Hello Async Func: " &lt;&lt; counter &lt;&lt; std::endl;
+        ++counter;
+        async_function(io);
+    });
+}
+
+void other_async_function(async::io_context::strand&amp; io) {
+    static auto counter = 0;
+    async::post(io, [&amp;io]() {
+        std::cout &lt;&lt; "Hello Other Async Func: " &lt;&lt; counter &lt;&lt; std::endl;
+        ++counter;
+        other_async_function(io);
+    });
+}
+
+int main() {
+    async::io_context io;
+    async::io_context::strand strand{io};
+    async_function(strand);
+    other_async_function(strand);
+    std::thread t{[&amp;io] { io.run(); }};
+    io.run();
+}
+</code></pre>
+            <div class="fragment">
+                <p style="text-align: left; margin: 5px 0 3px 0; font-size: 0.45em;">Output (parallel execution on 2 threads):</p>
+                <pre style="background-color: #1e1e1e; border-left: 3px solid #4CAF50; padding: 8px; margin: 0; font-size: 0.35em;"><code style="color: #4CAF50; font-family: 'Courier New', monospace;">$ ./multithreading_with_strands
+Hello Async Func: 0
+Hello Other Async Func: 0
+Hello Async Func: 1
+Hello Other Async Func: 1
+Hello Async Func: 2
+Hello Other Async Func: 2
+...</code></pre>
+            </div>
+        </section>
+
+        <!-- Channel Example - slides/channel-example.html -->
+        <section aria-hidden="true" class="future" hidden="" style="top: 120px; display: none;">
+            <h2 style="font-size: 1.6em; margin: 0 0 8px 0;">Channels: Producer-Consumer</h2>
+            <pre style="font-size: 0.35em; margin: 0;"><code class="language-cpp" data-line-numbers="|1-10|12-20|23-24|25|27-28|" data-noescape="" data-trim="">
+void producer(async::experimental::channel&lt;void(error_code, int)&gt;&amp; ch) {
+    static int counter = 0;
+    ch.async_send(
+        error_code{}, counter,
+        [&amp;ch](error_code ec) {
+            if (!ec) {
+                ++counter;
+                producer(ch);
+            }
+        });
+}
+
+void consumer(async::experimental::channel&lt;void(error_code, int)&gt;&amp; ch) {
+    ch.async_receive(
+        [&amp;ch](error_code ec, int value) {
+            if (!ec) {
+                std::cout &lt;&lt; "Received: " &lt;&lt; value &lt;&lt; std::endl;
+                consumer(ch);
+            }
+        });
+}
+
+int main() {
+    async::io_context io;
+    async::experimental::channel&lt;void(error_code, int)&gt; channel(io, 10);
+
+    producer(channel);
+    consumer(channel);
+
+    io.run();
+}
+</code></pre>
+            <div class="fragment">
+                <p style="text-align: left; margin: 5px 0 3px 0; font-size: 0.45em;">Output:</p>
+                <pre style="background-color: #1e1e1e; border-left: 3px solid #4CAF50; padding: 8px; margin: 0; font-size: 0.35em;"><code style="color: #4CAF50; font-family: 'Courier New', monospace;">$ ./channel_example
+Received: 0
+Received: 1
+Received: 2
+Received: 3
+Received: 4
+...</code></pre>
+            </div>
+        </section>
+
+        <!-- Channel Coroutine Example - slides/channel-coroutine-example.html -->
+        <section aria-hidden="true" class="future" hidden="" style="top: 120px; display: none;">
+            <h2 style="font-size: 1.6em; margin: 0 0 8px 0;">Channels with Coroutines</h2>
+            <pre style="font-size: 0.35em; margin: 0;"><code class="language-cpp" data-line-numbers="|1-5|2-4|9-13|20-21|" data-noescape="" data-trim="">
+async::awaitable&lt;void&gt; producer(async::experimental::channel&lt;void(error_code, int)&gt;&amp; ch) {
+    for (int counter = 0; ; ++counter) {
+        co_await ch.async_send(error_code{}, counter, async::use_awaitable);
+    }
+}
+
+async::awaitable&lt;void&gt; consumer(async::experimental::channel&lt;void(error_code, int)&gt;&amp; ch) {
+    for (;;) {
+        auto [ec, value] = co_await ch.async_receive(async::use_awaitable);
+        if (!ec) {
+            std::cout &lt;&lt; "Received: " &lt;&lt; value &lt;&lt; std::endl;
+        }
+    }
+}
+
+int main() {
+    async::io_context io;
+    async::experimental::channel&lt;void(error_code, int)&gt; channel(io, 10);
+
+    async::co_spawn(io, producer(channel), async::detached);
+    async::co_spawn(io, consumer(channel), async::detached);
+
+    io.run();
+}
+</code></pre>
+            <div class="fragment">
+                <p style="text-align: left; margin: 5px 0 3px 0; font-size: 0.45em;">Output:</p>
+                <pre style="background-color: #1e1e1e; border-left: 3px solid #4CAF50; padding: 8px; margin: 0; font-size: 0.35em;"><code style="color: #4CAF50; font-family: 'Courier New', monospace;">$ ./channel_coroutine_example
+Received: 0
+Received: 1
+Received: 2
+Received: 3
+Received: 4
+...</code></pre>
+            </div>
         </section>
 
         <section aria-hidden="true" class="future" hidden="" style="top: 126.5px; display: none;">
-            <h2>Boost.Asio Execution Flow</h2>
+            <h2>Libraries that support Boost.Asio</h2>
             <ul>
-                <li>1️⃣ Setup async operation</li>
-                <li>2️⃣ Provide completion handler</li>
-                <li>3️⃣ Call <code>io_context.run()</code></li>
-                <li>4️⃣ Handler triggers on I/O completion</li>
+                <li>Boost.Beast (http and websocket)</li>
+                <li>Boost.Mqtt5 </li>
+                <li>eProsima Fast-DDS</li>
             </ul>
         </section>
-
         <section aria-hidden="true" class="future" hidden="" style="top: 87px; display: none;">
             <h1>🎉 Thank You!</h1>
             <p>Questions?</p>
-            <p><small>Boost.Asio — Powering High Performance C++ Networking</small></p>
         </section>
 
     </div>
@@ -251,30 +432,6 @@ boost::asio::post(strand, [] {
     <div class="speaker-notes" data-prevent-swipe="" tabindex="0"></div>
     <div class="pause-overlay">
         <button class="resume-button">Resume presentation</button>
-    </div>
-    <div aria-atomic="true" aria-live="polite" class="aria-status"
-         style="position: absolute; height: 1px; width: 1px; overflow: hidden; clip: rect(1px, 1px, 1px, 1px);">What is
-        Boost.Asio?
-        📡
-        Library
-        for
-        network &amp; low‑level
-        I/O 🔥
-        Asynchronous
-        event-driven
-        programming
-        ✅ Part
-        of the
-        Boost
-        C++
-        Libraries
-        🧱 Forms
-        the base
-        for
-        std::asio
-        in
-        Networking
-        TS
     </div>
 </div>
 

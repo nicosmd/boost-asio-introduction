@@ -1,0 +1,25 @@
+<section aria-hidden="true" class="future" hidden="" style="top: 120px; display: none;">
+    <h2>Simple Example: Hello World</h2>
+    <pre><code class="language-cpp" data-noescape="" data-trim="" data-line-numbers="">
+#include &lt;iostream&gt;
+#include &lt;boost/asio.hpp&gt;
+
+namespace async = boost::asio;
+
+int main() {
+    async::io_context io;
+
+    async::post(io, []() {
+        std::cout &lt;&lt; "Hello World" &lt;&lt; std::endl;
+    });
+
+    io.run();
+}
+</code></pre>
+    <div class="fragment">
+        <p style="text-align: left; margin-top: 20px;">Output:</p>
+        <pre style="background-color: #1e1e1e; border-left: 4px solid #4CAF50; padding: 15px; margin-top: 10px;"><code
+                style="color: #4CAF50; font-family: 'Courier New', monospace;">$ ./main
+Hello World</code></pre>
+    </div>
+</section>

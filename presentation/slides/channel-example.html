@@ -1,0 +1,46 @@
+<section aria-hidden="true" class="future" hidden="" style="top: 120px; display: none;">
+    <h2 style="font-size: 1.6em; margin: 0 0 8px 0;">Channels: Producer-Consumer</h2>
+    <pre style="font-size: 0.35em; margin: 0;"><code class="language-cpp" data-line-numbers="|7-20|22-32|39|42-43|" data-noescape="" data-trim="">
+void producer(async::experimental::channel&lt;void(error_code, int)&gt;&amp; ch) {
+    static int counter = 0;
+    ch.async_send(
+        error_code{}, counter,
+        [&amp;ch](error_code ec) {
+            if (!ec) {
+                ++counter;
+                producer(ch);
+            }
+        });
+}
+
+void consumer(async::experimental::channel&lt;void(error_code, int)&gt;&amp; ch) {
+    ch.async_receive(
+        [&amp;ch](error_code ec, int value) {
+            if (!ec) {
+                std::cout &lt;&lt; "Received: " &lt;&lt; value &lt;&lt; std::endl;
+                consumer(ch);
+            }
+        });
+}
+
+int main() {
+    async::io_context io;
+    async::experimental::channel&lt;void(error_code, int)&gt; channel(io, 10);
+
+    producer(channel);
+    consumer(channel);
+
+    io.run();
+}
+</code></pre>
+    <div class="fragment">
+        <p style="text-align: left; margin: 5px 0 3px 0; font-size: 0.45em;">Output:</p>
+        <pre style="background-color: #1e1e1e; border-left: 3px solid #4CAF50; padding: 8px; margin: 0; font-size: 0.35em;"><code style="color: #4CAF50; font-family: 'Courier New', monospace;">$ ./channel_example
+Received: 0
+Received: 1
+Received: 2
+Received: 3
+Received: 4
+...</code></pre>
+    </div>
+</section>

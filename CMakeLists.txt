@@ -20,3 +20,19 @@ target_link_libraries(timer_loop_example boost::boost)
 add_executable(concurrent_loops concurrent_loops.cpp)
 
 target_link_libraries(concurrent_loops boost::boost)
+
+add_executable(multithreading multithreading.cpp)
+
+target_link_libraries(multithreading boost::boost)
+
+add_executable(multithreading_with_strand multithreading_with_strand.cpp)
+
+target_link_libraries(multithreading_with_strand boost::boost)
+
+add_executable(channel_example channel_example.cpp)
+
+target_link_libraries(channel_example boost::boost)
+
+add_executable(channel_coroutine_example channel_coroutine_example.cpp)
+
+target_link_libraries(channel_coroutine_example boost::boost)
