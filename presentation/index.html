@@ -374,6 +374,35 @@ Received: 4
                 <li>eProsima Fast-DDS</li>
             </ul>
         </section>
+
+        <!-- Summary slide -->
+        <section aria-hidden="true" class="future" hidden="" style="top: 90px; display: none;">
+            <h2>Why you should think async</h2>
+            <ul style="font-size: 0.85em;">
+                <li class="fragment"><strong>Single-threaded concurrency</strong> - Handle thousands of operations without thread overhead</li>
+                <li class="fragment"><strong>Better resource efficiency</strong> - One thread can multiplex many I/O operations</li>
+                <li class="fragment"><strong>Avoid synchronization complexity</strong> - No mutexes, locks, or data races in single-threaded async</li>
+                <li class="fragment"><strong>Scalability</strong> - Threads don't scale (context switching, memory overhead)</li>
+                <li class="fragment"><strong>Flexible composition</strong> - Callbacks, futures, or coroutines for cleaner code</li>
+                <li class="fragment"><strong>Hybrid approach</strong> - Use strands when you need multi-threading without race conditions</li>
+            </ul>
+        </section>
+
+        <!-- What we learned slide -->
+        <section aria-hidden="true" class="future" hidden="" style="top: 90px; display: none;">
+            <h2>What We Learned</h2>
+            <ul style="font-size: 0.85em;">
+                <li class="fragment"><strong>io_context</strong> - The event loop that drives all async operations</li>
+                <li class="fragment"><strong>async::post</strong> - Posting work to the io_context for deferred execution</li>
+                <li class="fragment"><strong>Timers</strong> - Using steady_timer and async_wait for time-based events</li>
+                <li class="fragment"><strong>Concurrent execution</strong> - Multiple async operations running cooperatively</li>
+                <li class="fragment"><strong>Multithreading</strong> - Scaling with multiple threads calling io.run()</li>
+                <li class="fragment"><strong>Strands</strong> - Serializing execution to prevent race conditions</li>
+                <li class="fragment"><strong>Channels</strong> - Producer-consumer patterns with async communication</li>
+                <li class="fragment"><strong>Coroutines</strong> - Writing async code that looks synchronous with co_await</li>
+            </ul>
+        </section>
+
         <section aria-hidden="true" class="future" hidden="" style="top: 87px; display: none;">
             <h1>🎉 Thank You!</h1>
             <p>Questions?</p>
@@ -409,10 +438,6 @@ Received: 4
             <div class="slide-background-content"></div>
         </div>
     </div>
-    <div class="slide-number" style="display: block;"><a
-            href="file:///Users/nico.schmidt/Downloads/boost_asio_presentation.html#/1">
-        <span class="slide-number-a">2</span>
-    </a></div>
     <aside class="controls" data-controls-back-arrows="faded" data-controls-layout="bottom-right"
            style="display: block;">
         <button aria-label="previous slide" class="navigate-left enabled">
