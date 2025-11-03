@@ -16,8 +16,7 @@ async::awaitable<void> producer(async::experimental::channel<void(boost::system:
 async::awaitable<void> consumer(async::experimental::channel<void(boost::system::error_code, int)>& channel)
 {
     for (;;) {
-        auto [ec, value] = co_await channel.async_receive(async::use_awaitable);
-        if (!ec) {
+        if (auto [ec, value] = co_await channel.async_receive(async::as_tuple); !ec) {
             std::cout << "Received: " << value << std::endl;
         }
     }

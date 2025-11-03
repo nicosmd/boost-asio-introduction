@@ -337,7 +337,7 @@ async::awaitable&lt;void&gt; producer(async::experimental::channel&lt;void(error
 
 async::awaitable&lt;void&gt; consumer(async::experimental::channel&lt;void(error_code, int)&gt;&amp; ch) {
     for (;;) {
-        auto [ec, value] = co_await ch.async_receive(async::use_awaitable);
+        auto [ec, value] = co_await ch.async_receive(async::as_tuple);
         if (!ec) {
             std::cout &lt;&lt; "Received: " &lt;&lt; value &lt;&lt; std::endl;
         }
